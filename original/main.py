@@ -1,6 +1,13 @@
-import art
-import random
+# main.py — original course solution for Day 14: Higher or Lower.
+# Everything lives in one file: data, helper functions, and the game loop.
+# This is the procedural style taught in the course — no classes, no modules
+# beyond the two imports below.
 
+import art      # art.py in this same folder — holds the logo and VS separator
+import random   # standard library — used to pick random accounts from the list
+
+# The full dataset of Instagram accounts.
+# Each entry is a dict with name, follower_count (in millions), description, and country.
 data = [
     {'name': 'Instagram', 'follower_count': 346, 'description': 'Social media platform', 'country': 'United States'},
     {'name': 'Cristiano Ronaldo', 'follower_count': 215, 'description': 'Footballer', 'country': 'Portugal'},
@@ -27,12 +34,12 @@ data = [
     {'name': 'Ellen DeGeneres', 'follower_count': 87, 'description': 'Comedian', 'country': 'United States'},
     {'name': 'Real Madrid CF', 'follower_count': 86, 'description': 'Football club', 'country': 'Spain'},
     {'name': 'FC Barcelona', 'follower_count': 85, 'description': 'Football club', 'country': 'Spain'},
-    {'name': 'Rihanna', 'follower_count': 81, 'description': 'Musician and businesswoman', 'country': 'Barbados'},
     {'name': 'David Beckham', 'follower_count': 82, 'description': 'Footballer', 'country': 'United Kingdom'},
+    {'name': 'Rihanna', 'follower_count': 81, 'description': 'Musician and businesswoman', 'country': 'Barbados'},
     {'name': 'Demi Lovato', 'follower_count': 80, 'description': 'Musician and actress', 'country': 'United States'},
     {'name': "Victoria's Secret", 'follower_count': 69, 'description': 'Lingerie brand', 'country': 'United States'},
-    {'name': 'Cardi B', 'follower_count': 67, 'description': 'Musician', 'country': 'United States'},
     {'name': 'Zendaya', 'follower_count': 68, 'description': 'Actress and musician', 'country': 'United States'},
+    {'name': 'Cardi B', 'follower_count': 67, 'description': 'Musician', 'country': 'United States'},
     {'name': 'Shakira', 'follower_count': 66, 'description': 'Musician', 'country': 'Colombia'},
     {'name': 'Drake', 'follower_count': 65, 'description': 'Musician', 'country': 'Canada'},
     {'name': 'Chris Brown', 'follower_count': 64, 'description': 'Musician', 'country': 'United States'},
@@ -56,37 +63,52 @@ data = [
 
 
 def format_data(account):
-    """Takes the account data and returns the printable format."""
+    """Takes an account dict and returns a human-readable string for display."""
     account_name = account["name"]
     account_descr = account["description"]
     account_country = account["country"]
+    # Example output: "Taylor Swift, a Musician, from United States"
     return f"{account_name}, a {account_descr}, from {account_country}"
 
 
 def check_answer(u_guess, a_foll, b_foll):
-    """Takes the user guess and follower counts and returns if they got it right."""
+    """Returns True if the player's guess matches which account has more followers.
+
+    Tie rule: if both follower counts are equal, any guess is accepted as correct.
+    """
+    # Tie: counts match, player gets the point regardless of their guess
     if a_foll == b_foll:
         print("Both accounts have (roughly) the same number of followers. You still get the point ;)")
         return True
+
+    # If A has more followers, the correct guess is "a", and vice versa.
     if a_foll > b_foll:
         return u_guess == "a"
     else:
         return u_guess == "b"
 
 
-print(art.logo)
+# --- Game setup ---
+print(art.logo)   # print the ASCII title art before the game starts
 
 current_score = 0
+
+# Pick two random starting accounts.
+# Note: there's no duplicate check here, so A and B could theoretically be the same.
 a = random.choice(data)
 b = random.choice(data)
-game_at_play = True
 
+game_at_play = True  # flag that controls the main game loop
+
+# --- Main game loop ---
 while game_at_play:
 
+    # Show both accounts to the player
     print(format_data(a))
-    print(art.vs)
+    print(art.vs)   # ASCII "VS" separator
     print(format_data(b))
 
+    # Input validation loop: keep asking until the player types 'a' or 'b'
     user_answered = False
     while not user_answered:
         user_guess = input("Who has more followers? Type 'A' or 'B': ").lower()
@@ -95,16 +117,24 @@ while game_at_play:
         else:
             print("Please enter a valid answer.")
 
+    # Extract follower counts to pass into check_answer
     a_followers = a['follower_count']
     b_followers = b['follower_count']
 
     is_correct = check_answer(user_guess, a_followers, b_followers)
+
     if is_correct:
         current_score += 1
+        # Clear the screen by printing 25 blank lines before showing the result.
+        # (The advanced version uses os.system("clear") for a cleaner approach.)
         print('\n' * 25)
         print(f"You're right! Current score: {current_score}")
+
+        # "B becomes the new A" — this is the key mechanic.
+        # The player already knows B's follower count, so it stays on screen
+        # as the known quantity while a fresh unknown B is drawn.
         a = b
         b = random.choice(data)
     else:
         print(f"I'm sorry, you guessed incorrectly. Your final score was: {current_score}")
-        game_at_play = False
+        game_at_play = False  # break out of the while loop

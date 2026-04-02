@@ -1,7 +1,23 @@
+# config.py — all constants and raw game data live here.
+# No logic, no imports. Any magic number used elsewhere should be defined here
+# so it's easy to tune (e.g. animation speed) without hunting through the code.
+
+# Seconds between each character printed by the typewriter animation.
+# 0.004s = ~4 ms per character — fast enough to feel snappy, slow enough to look animated.
 TYPEWRITER_DELAY: float = 0.004
+
+# How long (seconds) to pause after the logo finishes animating before showing the menu.
+# Gives the user a moment to read the title before the screen changes.
 PAUSE_AFTER_LOGO: float = 0.8
+
+# Width of the decorative divider lines printed between sections.
+# 50 characters fits comfortably in a standard 80-column terminal.
 DIVIDER_WIDTH: int = 50
 
+# All 50 Instagram accounts used in the game.
+# follower_count is in millions (e.g. 346 = 346 million followers).
+# Keeping the data here means higher_lower.py (logic) and display.py (UI)
+# never need to import from each other — they both reach into config.
 DATA: list[dict] = [
     {'name': 'Instagram', 'follower_count': 346, 'description': 'Social media platform', 'country': 'United States'},
     {'name': 'Cristiano Ronaldo', 'follower_count': 215, 'description': 'Footballer', 'country': 'Portugal'},
